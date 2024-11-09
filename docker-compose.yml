@@ -1,0 +1,15 @@
+version: '3'
+services:
+  summarization_service:
+    build:
+      context: ./summarization_service  
+    ports:
+      - "8000:8000"
+    depends_on:
+      - api_gateway_service  
+
+  api_gateway_service:
+    build:
+      context: ./api_gateway_service  
+    ports:
+      - "8080:8080" 
