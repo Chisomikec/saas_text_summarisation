@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import Basemodel
+from pydantic import BaseModel
 from transformers import pipeline
 import logging
 
@@ -13,17 +13,17 @@ app = FastAPI()
 #this loads the summarization model and checks if there is an error in loading the model
 logger.info("Loading the summarization model ...")
 try:
-    summarizer = pipeline("summerization", model = "Falconsai/text_summarization")
+    summarizer = pipeline("summarization", model = "Falconsai/text_summarization")
     logger.info("Model has been successfully loaded.")
 except Exception as e:
     logger.error(f"Model failed to load. excption is {e}")
     raise
 
 
-class summary_req(Basemodel):  #this handles the incoming request
+class summary_req(BaseModel):  #this handles the incoming request
     text: str
-    max_len: int = 1000
-    min_len: int=30  
+    max_length: int = 1000
+    min_length: int=30  
 
 
 @app.post("/summarize/")
@@ -33,8 +33,8 @@ def summarize(request: summary_req):
     try:
         # this generates the summary within the specified length
         summary = summarizer(request.text,
-                        max_len= request.max_len,
-                        min_len= request.min_len,
+                        max_length= request.max_length,
+                        min_length= request.min_length,
                         do_sample=False)
         logger.info("summary has been successfully generated.")
         return{"summary": summary[0]["summary_text"]}
