@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+#from pydantic import BaseModel
 from transformers import pipeline
 import logging
-
+#from typing import Optional, List
+from shared.models import summary_req
 
 # logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -20,24 +21,30 @@ except Exception as e:
     raise
 
 
-class summary_req(BaseModel):  #this handles the incoming request
-    text: str
-    max_length: int = 1000
-    min_length: int=30  
+#class summary_req(BaseModel):  #this handles the incoming request
+    
+    text: Optional[str] = None
+    texts: Optional[List[str]] = None
+    max_length: Optional[int] = 1000
+    min_length: Optional[int] = 30
 
 
 @app.post("/summarize/")
-def summarize(request: summary_req):
-    logger.info(f"summarization request received, of length: {len(request.text)}")
+async def summarize(request: summary_req):
+    logger.info(f"summarization request received, of length: single_text={bool(request.text)}, multi_texts={bool(request.texts)}")
 
-    try:
-        # this generates the summary within the specified length
-        summary = summarizer(request.text,
-                        max_length= request.max_length,
-                        min_length= request.min_length,
-                        do_sample=False)
-        logger.info("summary has been successfully generated.")
-        return{"summary": summary[0]["summary_text"]}
-    except Exception as e:
-        logger.error(f"error in generating summary: {e}")
-        raise HTTPException(status_code=500, detail="An error has occured while generating the summary.") 
+    if request.text:
+        # if there is only single text to summarize
+        logger.info(f"summarization request received, of length: {len(request.text)}")
+        summary = summarizer(request.text, max_length=request.max_length, min_length=request.min_length)
+        return {"summary": summary[0]['summary_text']}
+    elif request.texts:
+        # if multiple texts are provided 
+        logger.info(f"summarization request received, batch size: {len(request.texts)}")
+        summaries = [summarizer(text, max_length=request.max_length, min_length=request.min_length)[0]['summary_text'] for text in request.texts]
+        return {"summaries": summaries}
+    else:
+        # If neither 'text' nor 'texts' is provided
+        logger.warning("No valid input provided can be summarized")
+        raise HTTPException(status_code=400, detail =" no valid input provided")
+    
