@@ -46,6 +46,19 @@ services:
       - mongodb_data:/data/db  # Persistent storage
     restart: unless-stopped
 
+
+  authentication_service:
+    build:
+      context: ./authentication_service
+      dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    env_file:
+      - ./authentication_service/.env
+    depends_on:
+      - mongodb
+
 volumes:
   mongodb_data:  # Ensures data is not lost when restarted
     driver: local
