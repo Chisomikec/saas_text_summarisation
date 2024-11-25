@@ -23,3 +23,14 @@ services:
     volumes:
       - ./shared:/app/shared
     
+    
+  #mlflow:
+   # image: mlflow/mlflow:2.18.0 # Use the official MLflow image
+    #container_name: mlflow
+    #ports:
+     # - "5000:5000"  # Expose MLflow tracking server
+   # volumes:
+    #  - ./mlruns:/mlflow/mlruns  # Persist MLflow runs
+    #environment:
+     # - BACKEND_STORE_URI=sqlite:///mlflow.db  # Use SQLite for backend storage
+      #- ARTIFACT_ROOT=/mlflow/mlruns  # Path to store artifacts
