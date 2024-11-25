@@ -9,6 +9,7 @@ __pycache__/
 
 authentication_service/
 
+
 # Distribution / packaging
 .Python
 build/
