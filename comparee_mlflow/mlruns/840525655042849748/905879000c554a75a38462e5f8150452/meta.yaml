@@ -1,0 +1,15 @@
+artifact_uri: file:///home/vboxuser/coursework-Chisomikec/comparee_mlflow/mlruns/840525655042849748/905879000c554a75a38462e5f8150452/artifacts
+end_time: 1732449119316
+entry_point_name: ''
+experiment_id: '840525655042849748'
+lifecycle_stage: active
+run_id: 905879000c554a75a38462e5f8150452
+run_name: gaudy-bear-140
+run_uuid: 905879000c554a75a38462e5f8150452
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1732448932702
+status: 3
+tags: []
+user_id: root

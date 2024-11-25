@@ -1,0 +1,6 @@
+artifact_location: file:///home/vboxuser/coursework-Chisomikec/comparee_mlflow/mlruns/840525655042849748
+creation_time: 1732448932645
+experiment_id: '840525655042849748'
+last_update_time: 1732448932645
+lifecycle_stage: active
+name: model_compare

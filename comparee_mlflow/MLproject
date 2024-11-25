@@ -1,0 +1,14 @@
+name: model_compare
+tracking_uri: "file:///app/mlruns"
+
+
+docker_env:
+  image: mlflow_compare
+
+entry_points:
+  main:
+    #parameters:
+     # model: {type: str}
+    #command: "python compare.py "
+  #compare_all:
+    command: "python compare.py" #python run_all_models.py"
