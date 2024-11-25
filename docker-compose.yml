@@ -10,6 +10,7 @@ services:
       - "8000:8000" 
     depends_on:
       - summarize_service
+      - storage_service
     volumes:
       - ./shared:/app/shared
 
@@ -22,6 +23,46 @@ services:
       - "8001:8001"
     volumes:
       - ./shared:/app/shared
+
+  storage_service:
+    build:
+      context: ./storage_service
+      dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+    depends_on:
+      - mongodb  
+
+  mongodb:
+    image: mongo:4.4 #mongodb/mongodb-community-server:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db  # Persistent storage
+    restart: unless-stopped
+
+
+  authentication_service:
+    build:
+      context: ./authentication_service
+      dockerfile: Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    env_file:
+      - ./authentication_service/.env
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data:  # Ensures data is not lost when restarted
+    driver: local
+
     
     
   #mlflow:
