@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from typing import Optional
+from shared.models import SummaryRequest
 
 # Configure logging
 logging.basicConfig(
@@ -40,26 +41,32 @@ def get_lang_id(lang: str):
 app = FastAPI()
 
 # Input schema
-class SummarizationRequest(BaseModel):
-    text: str
-    tier: Optional[str] = "freemium"  # Default to "freemium"
-    max_length: Optional[int] = 84
-    target_lang: Optional[str] = "english"  # Default to English
+#class SummaryRequest(BaseModel):
+ #   text: str
+  #  tier: Optional[str] = "freemium"  # Default to "freemium"
+   # max_length: Optional[int] = 84
+   # target_lang: Optional[str] = "english"  # Default to English
 
 @app.post("/summarize")
-async def summarize(request: SummarizationRequest):
+async def summarize(request: SummaryRequest):
     try:
         logging.info(f"Received summarization request: {request.dict()}")
 
-        # Validate tier
-        if request.tier == "freemium" and request.target_lang != "english":
-            logging.warning(
-                "Freemium tier does not support cross-lingual summarization."
-            )
-            raise HTTPException(
-                status_code=400,
-                detail="Freemium tier does not support target_lang. Upgrade to premium for cross-lingual summarization."
-            )
+        # Default to freemium if non is specified
+        if not request.tier:
+            request.tier = "freemium"
+
+        # For freemium tier
+        if request.tier == "freemium":
+            if request.target_lang and request.target_lang != "english":
+                logging.warning(
+                    "Freemium tier does not support cross-lingual summarization."
+                )
+                raise HTTPException(
+                    status_code=400,
+                    detail="Freemium tier does not support target_lang. Upgrade to premium for cross-lingual summarization."
+                )
+            request.target_lang = "english"  # Default to english for freemium
 
         # clean the input text so it can handle paragraphs
         input_text = WHITESPACE_HANDLER(request.text)

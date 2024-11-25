@@ -33,6 +33,8 @@ services:
       - "8002:8002"
     depends_on:
       - mongodb  
+    volumes:
+      - ./shared:/app/shared
 
   mongodb:
     image: mongo:4.4 #mongodb/mongodb-community-server:latest
@@ -47,17 +49,17 @@ services:
     restart: unless-stopped
 
 
-  authentication_service:
-    build:
-      context: ./authentication_service
-      dockerfile: Dockerfile
-    command: uvicorn main:app --host 0.0.0.0 --port 8003
-    ports:
-      - "8003:8003"
-    env_file:
-      - ./authentication_service/.env
-    depends_on:
-      - mongodb
+#  authentication_service:
+ #   build:
+  #    context: ./authentication_service
+   #   dockerfile: Dockerfile
+    #command: uvicorn main:app --host 0.0.0.0 --port 8003
+#    ports:
+ #     - "8003:8003"
+  #  env_file:
+   #   - ./authentication_service/.env
+ #   depends_on:
+  #    - mongodb
 
 volumes:
   mongodb_data:  # Ensures data is not lost when restarted

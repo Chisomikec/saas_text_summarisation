@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import logging
 from pydantic import BaseModel
 from typing import List, Union
+from shared.models import Summary, BatchSummary
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -19,21 +20,21 @@ except Exception as e:
     logger.error(f"Failed to connect to mongodb: {e}")
     raise
 
-class Summary(BaseModel):
-    original_text: str
-    summarized_text: str
+#class Summary(BaseModel):
+ #   original_text: str
+  #  summarized_text: str
 
-class Batchsummary(BaseModel):
-    Summaries: List[Summary]  # a list of Summary objects
+#class BatchSummary(BaseModel):
+ #   Summaries: List[Summary]  # a list of Summary objects
 
 @app.post("/store/")
-async def store_summary(data: Union[Summary, Batchsummary]):
+async def store_summary(data: Union[Summary, BatchSummary]):
     try:
         # checks if its only a single summary and stores it
         if isinstance(data, Summary):   
             collection.insert_one(data.dict())
             return {"message": " A summary stored successfully"}
-        elif isinstance(data, Batchsummary):
+        elif isinstance(data, BatchSummary):
             collection.insert_many([summary.dict() for summary in data.Summaries ])
             #count = len(data.Summaries)
             return {f" {len(data.Summaries)} summaries stored"}

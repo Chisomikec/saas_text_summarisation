@@ -4,7 +4,7 @@ import requests
 import logging
 import httpx
 from typing import List, Optional
-from shared.models import summary_req
+from shared.models import SummaryRequest, Summary, BatchSummary
 
 app = FastAPI()
 
@@ -20,12 +20,21 @@ logger = logging.getLogger(__name__)
 
 
 @app.post("/summarize/")
-async def summarize_and_store(request: summary_req, return_text: Optional[bool] = Query(False)):  #this handles the incoming request
-    logger.info(f"API request with text: {bool(request.text)} and texts: {bool(request.texts)}")
+async def summarize_and_store(request: SummaryRequest, return_text: Optional[bool] = Query(False)):  #this handles the incoming request
+    logger.info(f"API request received for summarization")
 
     if not request.text and not request.texts:
         logger.warning("Input is empty. no text has beeen provided")
         raise HTTPException(status_code=400, detail="Text input cannot be empty.")
+    
+    # Default tier handling and validation
+    if not request.tier:
+        request.tier = "freemium"  # Default to freemium tier
+        logger.info("No tier specified. Defaulting to freemium tier.")
+
+    if request.tier == "freemium" and request.target_lang not in [None, "english"]:
+        logger.warning("Freemium tier does not support cross-lingual summarization.")
+        raise HTTPException(status_code=400, detail="Freemium tier does not support cross-lingual summarization.")
     
     try:    
         if request.text:
