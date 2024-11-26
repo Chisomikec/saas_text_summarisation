@@ -45,7 +45,7 @@ async def summarize_and_store(request: SummaryRequest, return_text: Optional[boo
         try:
        
             logger.info("Request sent to the summarize service")
-            async with httpx.AsyncClient() as client:
+            async with httpx.AsyncClient(timeout=60.0) as client:
 
                 response = await client.post("http://summarize_service:8001/summarize/", json=request.dict())
                 response.raise_for_status()

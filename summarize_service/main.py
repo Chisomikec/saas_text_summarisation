@@ -47,7 +47,7 @@ app = FastAPI()
    # max_length: Optional[int] = 84
    # target_lang: Optional[str] = "english"  # Default to English
 
-@app.post("/summarize")
+@app.post("/summarize/")
 async def summarize(request: SummaryRequest):
     try:
         logging.info(f"Received summarization request: {request.dict()}")

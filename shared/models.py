@@ -12,9 +12,10 @@ from typing import List, Optional
 # Request model for summarization
 class SummaryRequest(BaseModel):
     text: Optional[str] = None
-    texts: Optional[List[str]] = None
+    #texts: Optional[List[str]] = None
     tier: Optional[str] = "freemium"
     target_lang: Optional[str] = "english"
+    max_length: Optional[int] = 84
 
 # Single summary record for storage
 class Summary(BaseModel):
